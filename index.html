@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mathematics Mock Test: Calculus</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Apply Inter font to the whole page */
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Custom scrollbar for aesthetics */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9; /* gray-100 */
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #94a3b8; /* gray-400 */
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #64748b; /* gray-500 */
+        }
+        /* Style for the custom radio button label when checked */
+        input[type="radio"]:checked + label {
+            background-color: #e0f2fe; /* sky-100 */
+            border-color: #0ea5e9; /* sky-500 */
+            font-weight: 600;
+            color: #0369a1; /* sky-700 */
+        }
+    </style>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen p-4">
+
+    <div id="app" class="bg-white p-6 md:p-8 rounded-2xl shadow-xl w-full max-w-3xl mx-auto">
+
+        <div id="start-screen" class="text-center">
+            <h1 class="text-3xl font-bold text-gray-800 mb-4">Mathematics Mock Test</h1>
+            <p class="text-lg text-gray-600 mb-6">Chapters: Calculus (Limits, Derivatives, Integration)</p>
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6 text-left">
+                <h2 class="text-xl font-semibold text-blue-800 mb-2">Test Instructions</h2>
+                <ul class="list-disc list-inside text-gray-700 space-y-1">
+                    <li>Total Questions: <strong>50</strong></li>
+                    <li>Time Limit: <strong>60 Minutes</strong></li>
+                    <li>Correct Answer: <strong>+1 Mark</strong></li>
+                    <li>Incorrect Answer: <strong>-0.25 Marks</strong></li>
+                    <li>Unanswered: <strong>0 Marks</strong></li>
+                    <li>Click "Submit Test" when you are finished.</li>
+                </ul>
+            </div>
+            <button id="start-btn" class="w-full bg-blue-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-blue-700 transition-all duration-300 text-lg shadow-md">
+                Start Test
+            </button>
+        </div>
+
+        <div id="test-screen" class="hidden">
+            <div class="flex justify-between items-center mb-6 sticky top-0 bg-white pt-2 pb-4 border-b">
+                <h1 class="text-2xl font-bold text-gray-800">Mathematics Test</h1>
+                <div id="timer" class="font-mono text-2xl font-bold bg-gray-100 text-gray-800 py-2 px-4 rounded-lg shadow-inner">
+                    60:00
+                </div>
+            </div>
+
+            <div id="questions-container" class="space-y-8 max-h-[75vh] overflow-y-auto pr-2">
+                </div>
+        </div>
+
+        <div id="results-screen" class="hidden">
+            <h1 class="text-3xl font-bold text-gray-800 mb-4 text-center">Test Results</h1>
+            
+            <div id="score-summary" class="bg-gray-50 rounded-lg p-6 mb-6 text-center shadow-md">
+                </div>
+
+            <h2 class="text-2xl font-semibold text-gray-700 mb-4">Detailed Breakdown</h2>
+            <div id="results-details" class="space-y-4 max-h-[50vh] overflow-y-auto pr-2">
+                </div>
+            
+            <div class="mt-8">
+                <button id="restart-btn" class="w-full bg-blue-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-blue-700 transition-all duration-300 text-lg shadow-md">
+                    Take Test Again
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // --- 1. DATA: All 50 Questions ---
+        const questions = [
+            // 1. Limits, Continuity & Differentiability
+            {
+                q: "1. What is the value of lim(x→0) sin(3x) / x?",
+                options: [
+                    "(a) 3",
+                    "(b) 1/3",
+                    "(c) 1",
+                    "(d) 0"
+                ],
+                answer: 0
+            },
+            {
+                q: "2. What is the value of lim(x→0) (e⁴ˣ - 1) / x?",
+                options: [
+                    "(a) 1",
+                    "(b) 0",
+                    "(c) 4",
+                    "(d) e"
+                ],
+                answer: 2
+            },
+            {
+                q: "3. What is the value of lim(x→∞) (5x² + 2x - 1) / (3x² + 7)?",
+                options: [
+                    "(a) 5/3",
+                    "(b) 0",
+                    "(c) ∞",
+                    "(d) 1"
+                ],
+                answer: 0
+            },
+            {
+                q: "4. The function f(x) = |x| (absolute value function) at x=0 is:",
+                options: [
+                    "(a) Continuous and differentiable",
+                    "(b) Continuous but not differentiable",
+                    "(c) Discontinuous but differentiable",
+                    "(d) Neither continuous nor differentiable"
+                ],
+                answer: 1
+            },
+            {
+                q: "5. The function f(x) = x|x| at x=0 is:",
+                options: [
+                    "(a) Continuous and differentiable",
+                    "(b) Continuous but not differentiable",
+                    "(c) Discontinuous",
+                    "(d) Not differentiable"
+                ],
+                answer: 0
+            },
+            {
+                q: "6. If a function f(x) is differentiable at a point x=c, then it is:",
+                options: [
+                    "(a) Always continuous at x=c",
+                    "(b) Not necessarily continuous at x=c",
+                    "(c) Always discontinuous at x=c",
+                    "(d) None of the above"
+                ],
+                answer: 0
+            },
+            {
+                q: "7. For what value of k is the function f(x) = { (x² - 9)/(x - 3) if x ≠ 3; k if x = 3 } continuous at x=3?",
+                options: [
+                    "(a) 0",
+                    "(b) 3",
+                    "(c) 6",
+                    "(d) 9"
+                ],
+                answer: 2
+            },
+            {
+                q: "8. The derivative of f(x) = sin(x) from first principles (definition of derivative) is:",
+                options: [
+                    "(a) lim(h→0) [sin(x+h) - sin(x)] / h",
+                    "(b) lim(h→0) [cos(x+h) - cos(x)] / h",
+                    "(c) lim(h→0) [sin(x) - sin(h)] / h",
+                    "(d) lim(h→0) sin(x+h) / h"
+                ],
+                answer: 0
+            },
+            // 2. Methods of Differentiation
+            {
+                q: "9. If y = sin(x³), what is dy/dx?",
+                options: [
+                    "(a) cos(x³)",
+                    "(b) 3x² cos(x³)",
+                    "(c) 3 sin²(x) cos(x)",
+                    "(d) 3x² cos(x)"
+                ],
+                answer: 1
+            },
+            {
+                q: "10. If y = x²eˣ, what is dy/dx?",
+                options: [
+                    "(a) 2xeˣ",
+                    "(b) 2xeˣ + x²eˣ",
+                    "(c) 2x + eˣ",
+                    "(d) 2x²eˣ"
+                ],
+                answer: 1
+            },
+            {
+                q: "11. If y = log(x) / x, what is dy/dx?",
+                options: [
+                    "(a) 1/x²",
+                    "(b) (1 - log x) / x²",
+                    "(c) (log x - 1) / x²",
+                    "(d) 1/x"
+                ],
+                answer: 1
+            },
+            {
+                q: "12. If x = t² and y = t³, then d²y/dx² is:",
+                options: [
+                    "(a) 3/(2t)",
+                    "(b) 3/(4t)",
+                    "(c) 3/2",
+                    "(d) 2/(3t)"
+                ],
+                answer: 1
+            },
+            {
+                q: "13. What is the derivative of xˣ with respect to x?",
+                options: [
+                    "(a) x ⋅ xˣ⁻¹",
+                    "(b) xˣ (1 + log x)",
+                    "(c) xˣ log x",
+                    "(d) 1"
+                ],
+                answer: 1
+            },
+            // 3. Applications of Derivatives
+            {
+                q: "14. The slope of the tangent to the curve y = x³ - x + 1 at the point (1, 1) is:",
+                options: [
+                    "(a) 1",
+                    "(b) 2",
+                    "(c) 0",
+                    "(d) 3"
+                ],
+                answer: 1
+            },
+            {
+                q: "15. The slope of the normal to the curve y = x² at the point (2, 4) is:",
+                options: [
+                    "(a) 4",
+                    "(b) -4",
+                    "(c) 1/4",
+                    "(d) -1/4"
+                ],
+                answer: 3
+            },
+            {
+                q: "16. The equation of the normal to the curve 2y + x² = 3 at the point (1, 1) is:",
+                options: [
+                    "(a) x - y = 0",
+                    "(b) x + y = 0",
+                    "(c) x + 2y = 3",
+                    "(d) 2x - y = 1"
+                ],
+                answer: 0
+            },
+            {
+                q: "17. The radius of a circle is increasing at the rate of 2 cm/s. At what rate is its area increasing when the radius is 10 cm?",
+                options: [
+                    "(a) 20π cm²/s",
+                    "(b) 40π cm²/s",
+                    "(c) 100π cm²/s",
+                    "(d) 40 cm²/s"
+                ],
+                answer: 1
+            },
+            {
+                q: "18. The function f(x) = tan(x) - x:",
+                options: [
+                    "(a) always increases",
+                    "(b) always decreases",
+                    "(c) sometimes increases, sometimes decreases",
+                    "(d) remains constant"
+                ],
+                answer: 0
+            },
+            {
+                q: "19. The function f(x) = x² - 4x + 6 is strictly increasing in the interval:",
+                options: [
+                    "(a) (-∞, 2)",
+                    "(b) (2, ∞)",
+                    "(c) (0, 2)",
+                    "(d) (-∞, ∞)"
+                ],
+                answer: 1
+            },
+            {
+                q: "20. The local maximum value of the function f(x) = x³ - 3x is:",
+                options: [
+                    "(a) 2",
+                    "(b) -2",
+                    "(c) 0",
+                    "(d) 1"
+                ],
+                answer: 0
+            },
+            {
+                q: "21. The maximum slope of the curve y = -x³ + 3x² + 12x - 5 is:",
+                options: [
+                    "(a) 12",
+                    "(b) 15",
+                    "(c) 9",
+                    "(d) 0"
+                ],
+                answer: 1
+            },
+            {
+                q: "22. The absolute maximum value of f(x) = 4x - (1/2)x² in the interval [-2, 9/2] is:",
+                options: [
+                    "(a) 8",
+                    "(b) 9",
+                    "(c) 10",
+                    "(d) -10"
+                ],
+                answer: 0
+            },
+            {
+                q: "23. For a function f(x) to have a local minimum at x=c, the conditions are:",
+                options: [
+                    "(a) f'(c) = 0 and f''(c) > 0",
+                    "(b) f'(c) = 0 and f''(c) < 0",
+                    "(c) f'(c) < 0 and f''(c) > 0",
+                    "(d) f'(c) > 0 and f''(c) < 0"
+                ],
+                answer: 0
+            },
+            // 4. Indefinite Integration
+            {
+                q: "24. What is ∫ (3x² + sin x) dx?",
+                options: [
+                    "(a) x³ + cos x + C",
+                    "(b) x³ - cos x + C",
+                    "(c) 6x + cos x + C",
+                    "(d) 6x - cos x + C"
+                ],
+                answer: 1
+            },
+            {
+                q: "25. What is ∫ (1/x) dx?",
+                options: [
+                    "(a) log|x| + C",
+                    "(b) -1/x² + C",
+                    "(c) 1 + C",
+                    "(d) x log x - x + C"
+                ],
+                answer: 0
+            },
+            {
+                q: "26. What is ∫ sec(x) tan(x) dx?",
+                options: [
+                    "(a) tan(x) + C",
+                    "(b) sec(x) + C",
+                    "(c) sec²(x) + C",
+                    "(d) tan²(x) + C"
+                ],
+                answer: 1
+            },
+            {
+                q: "27. What is ∫ 1 / (1 + x²) dx?",
+                options: [
+                    "(a) log(1+x²) + C",
+                    "(b) sin⁻¹(x) + C",
+                    "(c) tan⁻¹(x) + C",
+                    "(d) sec⁻¹(x) + C"
+                ],
+                answer: 2
+            },
+            {
+                q: "28. What is ∫ 2x cos(x²) dx?",
+                options: [
+                    "(a) sin(x²) + C",
+                    "(b) -sin(x²) + C",
+                    "(c) 2 sin(x²) + C",
+                    "(d) (1/2) sin(x²) + C"
+                ],
+                answer: 0
+            },
+            {
+                q: "29. What is ∫ (log x)/x dx?",
+                options: [
+                    "(a) log(log x) + C",
+                    "(b) x log x + C",
+                    "(c) (log x)² + C",
+                    "(d) (log x)² / 2 + C"
+                ],
+                answer: 3
+            },
+            {
+                q: "30. What is ∫ x eˣ dx (Integration by Parts)?",
+                options: [
+                    "(a) eˣ(x - 1) + C",
+                    "(b) eˣ(x + 1) + C",
+                    "(c) x eˣ + C",
+                    "(d) eˣ + C"
+                ],
+                answer: 0
+            },
+            {
+                q: "31. What is ∫ log(x) dx?",
+                options: [
+                    "(a) 1/x + C",
+                    "(b) x log x - x + C",
+                    "(c) x log x + x + C",
+                    "(d) (log x)² / 2 + C"
+                ],
+                answer: 1
+            },
+            {
+                q: "32. What is ∫ 1 / (x² + 4) dx?",
+                options: [
+                    "(a) (1/2) tan⁻¹(x/2) + C",
+                    "(b) 2 tan⁻¹(x/2) + C",
+                    "(c) (1/4) tan⁻¹(x) + C",
+                    "(d) log(x²+4) + C"
+                ],
+                answer: 0
+            },
+            {
+                q: "33. What is ∫ 1 / √(9 - x²) dx?",
+                options: [
+                    "(a) sin⁻¹(x/3) + C",
+                    "(b) (1/3) sin⁻¹(x/3) + C",
+                    "(c) cos⁻¹(x/3) + C",
+                    "(d) log(√(9-x²)) + C"
+                ],
+                answer: 0
+            },
+            {
+                q: "34. What is ∫ tan²(x) dx?",
+                options: [
+                    "(a) sec²(x) + C",
+                    "(b) tan(x) - x + C",
+                    "(c) tan³(x) / 3 + C",
+                    "(d) log(sec² x) + C"
+                ],
+                answer: 1
+            },
+            // 5. Definite Integration & Area
+            {
+                q: "35. What is the value of ∫[0 to 1] x³ dx?",
+                options: [
+                    "(a) 1",
+                    "(b) 1/3",
+                    "(c) 1/4",
+                    "(d) 4"
+                ],
+                answer: 2
+            },
+            {
+                q: "36. What is the value of ∫[0 to π/2] sin(x) dx?",
+                options: [
+                    "(a) 0",
+                    "(b) 1",
+                    "(c) -1",
+                    "(d) π/2"
+                ],
+                answer: 1
+            },
+            {
+                q: "37. What is the value of ∫[-1 to 1] x⁵ dx?",
+                options: [
+                    "(a) 0",
+                    "(b) 1/6",
+                    "(c) 1/3",
+                    "(d) 2"
+                ],
+                answer: 0
+            },
+            {
+                q: "38. What is the value of ∫[-a to a] f(x) dx if f(x) is an even function?",
+                options: [
+                    "(a) 0",
+                    "(b) ∫[0 to a] f(x) dx",
+                    "(c) 2 ∫[0 to a] f(x) dx",
+                    "(d) a ⋅ f(a)"
+                ],
+                answer: 2
+            },
+            {
+                q: "39. What is the value of ∫[0 to π/2] (sin x) / (sin x + cos x) dx?",
+                options: [
+                    "(a) π/2",
+                    "(b) π/4",
+                    "(c) π",
+                    "(d) 0"
+                ],
+                answer: 1
+            },
+            {
+                q: "40. What is the value of ∫[0 to π/4] log(1 + tan x) dx?",
+                options: [
+                    "(a) π log 2",
+                    "(b) (π/4) log 2",
+                    "(c) (π/8) log 2",
+                    "(d) 0"
+                ],
+                answer: 2
+            },
+            {
+                q: "41. The area bounded by the curve y=x², the x-axis, and the lines x=0 and x=1 is:",
+                options: [
+                    "(a) 1",
+                    "(b) 1/2",
+                    "(c) 1/3",
+                    "(d) 2/3"
+                ],
+                answer: 2
+            },
+            {
+                q: "42. The area bounded by the curve y = cos x, the x-axis, from x=0 to x=π/2 is:",
+                options: [
+                    "(a) 0",
+                    "(b) 1",
+                    "(c) 2",
+                    "(d) π/2"
+                ],
+                answer: 1
+            },
+            {
+                q: "43. The area of the region bounded by y = sin x, y = cos x, and the y-axis for 0 ≤ x ≤ π/2 is:",
+                options: [
+                    "(a) √2 - 1",
+                    "(b) √2 + 1",
+                    "(c) 2√2",
+                    "(d) 0"
+                ],
+                answer: 0
+            },
+            {
+                q: "44. The area of the region bounded by the circle x² + y² = 16 is:",
+                options: [
+                    "(a) 4π",
+                    "(b) 8π",
+                    "(c) 16π",
+                    "(d) 256π"
+                ],
+                answer: 2
+            },
+            {
+                q: "45. The value of ∫[0 to 1.5] [x²] dx, where [.] is the greatest integer function, is:",
+                options: [
+                    "(a) 2 + √2",
+                    "(b) 2 - √2",
+                    "(c) 1",
+                    "(d) 2(1.5 - √2)"
+                ],
+                answer: 1
+            },
+            // 6. Differential Equations
+            {
+                q: "46. What is the order and degree, respectively, of the differential equation (d²y/dx²)³ + (dy/dx) + y = 0?",
+                options: [
+                    "(a) Order 2, Degree 3",
+                    "(b) Order 2, Degree 1",
+                    "(c) Order 3, Degree 2",
+                    "(d) Order 1, Degree 3"
+                ],
+                answer: 0
+            },
+            {
+                q: "47. The order and degree of the differential equation of the family of curves y = Ax + A³ (where A is an arbitrary constant) are:",
+                options: [
+                    "(a) Order 1, Degree 1",
+                    "(b) Order 1, Degree 3",
+                    "(c) Order 2, Degree 1",
+                    "(d) Order 1, Degree 2"
+                ],
+                answer: 1
+            },
+            {
+                q: "48. The general solution of the differential equation dy/dx = x²/y is:",
+                options: [
+                    "(a) y² = x³ + C",
+                    "(b) y²/2 = x³/3 + C",
+                    "(c) y = x² + C",
+                    "(d) log y = log x + C"
+                ],
+                answer: 1
+            },
+            {
+                q: "49. The solution of the differential equation dy/dx = (1+y²)/(1+x²) is:",
+                options: [
+                    "(a) y - x = C",
+                    "(b) y = tan⁻¹ x + C",
+                    "(c) tan⁻¹ y = tan⁻¹ x + C",
+                    "(d) y + x = C"
+                ],
+                answer: 2
+            },
+            {
+                q: "50. The integrating factor (I.F.) for the linear differential equation (1-x²)dy/dx - xy = 1 is:",
+                options: [
+                    "(a) x",
+                    "(b) √(1-x²)",
+                    "(c) 1 / √(1-x²)",
+                    "(d) e^(sin⁻¹ x)"
+                ],
+                answer: 1
+            }
+        ];
+
+
+        // --- 2. DOM Elements ---
+        const startScreen = document.getElementById('start-screen');
+        const testScreen = document.getElementById('test-screen');
+        const resultsScreen = document.getElementById('results-screen');
+
+        const startBtn = document.getElementById('start-btn');
+        const restartBtn = document.getElementById('restart-btn');
+
+        const timerEl = document.getElementById('timer');
+        const questionsContainer = document.getElementById('questions-container');
+        const scoreSummaryEl = document.getElementById('score-summary');
+        const resultsDetailsEl = document.getElementById('results-details');
+
+        // --- 3. State Variables ---
+        let timerSeconds = 3600; // 60 minutes * 60 seconds
+        let timerInterval = null;
+        let userAnswers = {}; // Stores { questionIndex: optionIndex }
+
+        // --- 4. Functions ---
+
+        /**
+         * Starts the test: Hides start, shows test, renders questions, starts timer.
+         */
+        function startTest() {
+            startScreen.style.display = 'none';
+            resultsScreen.style.display = 'none';
+            testScreen.style.display = 'block';
+            
+            // Reset state for a new test
+            userAnswers = {};
+            timerSeconds = 3600; // Reset to 60 minutes
+            timerEl.textContent = "60:00";
+            timerEl.classList.remove('text-red-600', 'animate-pulse');
+
+            renderQuestions();
+            startTimer();
+        }
+
+        /**
+         * Renders all questions and options into the questions container.
+         * Also adds the submit button at the end of the container.
+         */
+        function renderQuestions() {
+            questionsContainer.innerHTML = ''; // Clear old questions
+            questions.forEach((q, index) => {
+                const questionBlock = document.createElement('div');
+                questionBlock.className = 'question-block mb-8 p-4 bg-gray-50 rounded-lg shadow-sm';
+
+                // Question Text
+                const questionText = document.createElement('p');
+                questionText.className = 'question-text text-lg font-semibold text-gray-800 mb-4';
+                questionText.textContent = q.q; // Use textContent for safety
+                questionBlock.appendChild(questionText);
+
+                // Options Group
+                const optionsGroup = document.createElement('div');
+                optionsGroup.className = 'options-group space-y-3';
+
+                q.options.forEach((option, optionIndex) => {
+                    const radioId = `q${index}_option${optionIndex}`;
+                    
+                    const radioInput = document.createElement('input');
+                    radioInput.type = 'radio';
+                    radioInput.id = radioId;
+                    radioInput.name = `q${index}`;
+                    radioInput.value = optionIndex;
+                    radioInput.className = 'hidden';
+                    
+                    radioInput.onchange = () => {
+                        userAnswers[index] = optionIndex;
+                    };
+
+                    const radioLabel = document.createElement('label');
+                    radioLabel.htmlFor = radioId;
+                    radioLabel.textContent = option; // Use textContent
+                    radioLabel.className = 'option-label block p-3 rounded-lg border-2 border-gray-200 hover:bg-gray-100 cursor-pointer transition-all duration-200';
+                    
+                    optionsGroup.appendChild(radioInput);
+                    optionsGroup.appendChild(radioLabel);
+                });
+
+                questionBlock.appendChild(optionsGroup);
+                questionsContainer.appendChild(questionBlock);
+            });
+
+            // Add the submit button to the end of the questions container
+            const submitButtonContainer = document.createElement('div');
+            submitButtonContainer.className = 'mt-8';
+            
+            const submitButton = document.createElement('button');
+            submitButton.id = 'submit-btn';
+            submitButton.className = 'w-full bg-green-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-green-700 transition-all duration-300 text-lg shadow-md';
+            submitButton.textContent = 'Submit Test';
+            
+            submitButton.addEventListener('click', submitTest); 
+            
+            submitButtonContainer.appendChild(submitButton);
+            questionsContainer.appendChild(submitButtonContainer);
+        }
+
+        /**
+         * Starts the countdown timer.
+         */
+        function startTimer() {
+            if (timerInterval) {
+                clearInterval(timerInterval); // Clear any old timer
+            }
+
+            timerInterval = setInterval(() => {
+                timerSeconds--;
+                timerEl.textContent = formatTimerDisplay(timerSeconds);
+
+                // Add warning class when 5 minutes (300s) are left
+                if (timerSeconds <= 300 && !timerEl.classList.contains('text-red-600')) { 
+                    timerEl.classList.add('text-red-600');
+                    timerEl.classList.add('animate-pulse');
+                }
+
+                // Auto-submit when time runs out
+                if (timerSeconds <= 0) {
+                    submitTest();
+                }
+            }, 1000); // Update every second
+        }
+
+        /**
+         * Formats total seconds into MM:SS string.
+         */
+        function formatTimerDisplay(totalSeconds) {
+            const minutes = Math.floor(totalSeconds / 60);
+            const seconds = totalSeconds % 60;
+            return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+        
+        /**
+         * Formats total seconds into a readable string (e.g., "58m 12s").
+         */
+        function formatTimeTaken(totalSeconds) {
+            const minutes = Math.floor(totalSeconds / 60);
+            const seconds = totalSeconds % 60;
+            
+            let parts = [];
+            if (minutes > 0) parts.push(`${minutes}m`);
+            parts.push(`${seconds}s`);
+            
+            return parts.join(' ');
+        }
+
+        /**
+         * Submits the test: stops timer, calculates score, shows results.
+         */
+        function submitTest() {
+            // Prevent multiple submissions
+            if (timerInterval === null && testScreen.style.display === 'none') {
+                return; 
+            }
+            
+            clearInterval(timerInterval);
+            timerInterval = null;
+
+            testScreen.style.display = 'none';
+            resultsScreen.style.display = 'block';
+
+            let score = 0;
+            let correctCount = 0;
+            let incorrectCount = 0;
+            let unansweredCount = 0;
+            let resultsHTML = '';
+            // Calculate time taken (total time - remaining time)
+            const timeTaken = 3600 - timerSeconds;
+
+            questions.forEach((q, index) => {
+                const userAnswerIndex = userAnswers[index];
+                const correctAnswerIndex = q.answer;
+                const isCorrect = userAnswerIndex === correctAnswerIndex;
+
+                let statusClass = '';
+                let statusText = '';
+                let answerDetails = '';
+
+                if (userAnswerIndex === undefined) {
+                    // Unanswered
+                    unansweredCount++;
+                    statusClass = 'bg-yellow-100 border-yellow-300';
+                    statusText = '<span class="font-bold text-yellow-700">Not Answered (0)</span>';
+                    answerDetails = `<p class="text-gray-700 mt-1">Correct answer: <strong class="text-green-700">${q.options[correctAnswerIndex]}</strong></p>`;
+                } else if (isCorrect) {
+                    // Correct
+                    score += 1;
+                    correctCount++;
+                    statusClass = 'bg-green-100 border-green-300';
+                    statusText = '<span class="font-bold text-green-700">Correct (+1.00)</span>';
+                    answerDetails = `<p class="text-gray-700 mt-2">Your answer: <strong>${q.options[userAnswerIndex]}</strong></p>`;
+                } else {
+                    // Incorrect
+                    score -= 0.25;
+                    incorrectCount++;
+                    statusClass = 'bg-red-100 border-red-300';
+                    statusText = '<span class="font-bold text-red-700">Incorrect (-0.25)</span>';
+                    answerDetails = `
+                        <p class="text-gray-700 mt-2">Your answer: <strong class="text-red-700">${q.options[userAnswerIndex]}</strong></p>
+                        <p class="text-gray-700 mt-1">Correct answer: <strong class="text-green-700">${q.options[correctAnswerIndex]}</strong></p>
+                    `;
+                }
+
+                resultsHTML += `
+                    <div class="result-item p-4 rounded-lg border ${statusClass} shadow-sm">
+                        <div class="flex flex-col sm:flex-row justify-between sm:items-center">
+                            <p class="font-semibold text-gray-800 mb-2 sm:mb-0">${q.q}</p>
+                            <div class="flex-shrink-0">${statusText}</div>
+                        </div>
+                        ${answerDetails}
+                    </div>
+                `;
+            });
+
+            // Display Score Summary
+            const maxScore = questions.length;
+            const scorePercentage = ((score / maxScore)*100);
+            const finalPercentage = Math.max(0, scorePercentage).toFixed(1); // Ensure percentage isn't negative
+            
+            scoreSummaryEl.innerHTML = `
+                <h2 class="text-2xl font-bold text-gray-800 mb-2">Your Final Score: ${score.toFixed(2)} / ${maxScore}</h2>
+                <p class="text-4xl font-bold ${scorePercentage >= 40 ? 'text-green-600' : 'text-red-600'} mb-3">${finalPercentage}%</p>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 text-center text-lg mb-4">
+                    <div class="p-2 bg-green-50 rounded-lg">
+                        <div class="font-bold text-green-700">Correct</div>
+                        <div class="text-2xl font-bold text-green-600">${correctCount}</div>
+                    </div>
+                    <div class="p-2 bg-red-50 rounded-lg">
+                        <div class="font-bold text-red-700">Incorrect</div>
+                        <div class="text-2xl font-bold text-red-600">${incorrectCount}</div>
+                    </div>
+                    <div class="p-2 bg-yellow-50 rounded-lg">
+                        <div class="font-bold text-yellow-700">Unanswered</div>
+                        <div class="text-2xl font-bold text-yellow-600">${unansweredCount}</div>
+                    </div>
+                </div>
+                <p class="text-lg text-gray-600">Time Taken: <strong>${formatTimeTaken(timeTaken)}</strong></p>
+            `;
+
+            // Display Detailed Results
+            resultsDetailsEl.innerHTML = resultsHTML;
+        }
+        
+        /**
+         * Resets the app to the start screen.
+         */
+        function restartTest() {
+            resultsScreen.style.display = 'none';
+            testScreen.style.display = 'none';
+            startScreen.style.display = 'block';
+        }
+
+        // --- 5. Event Listeners ---
+        startBtn.addEventListener('click', startTest);
+        restartBtn.addEventListener('click', restartTest);
+
+    </script>
+</body>
+</html>
